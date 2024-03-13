@@ -1,79 +1,68 @@
-//  elements of the DOM
-let body = document.querySelector("body");
-let gridContainer = document.createElement("div");
-let buttonSizeGrid = document.createElement("button");
+// Constants for clarity and maintainability
+const BODY = document.querySelector("body");
+const MAX_GRID_SIZE = 750;
+const MAX_ALLOWED_GRID_SIZE = 64;
 
-// grid container
-gridContainer.className = "grid-container";
-buttonSizeGrid.className = "btn-grid-size";
+// Function to create grid elements
+function createGrid(size) {
+    const gridContainer = document.createElement("div");
+    gridContainer.classList.add("grid-container");
 
-// size button
-buttonSizeGrid.innerHTML = "Size"
-buttonSizeGrid.addEventListener("click", btnSizeGrid)
+    for (let i = 0; i < size; i++) {
+        const row = document.createElement("div");
+        row.classList.add("row");
+        for (let j = 0; j < size; j++) {
+            const column = document.createElement("div");
+            column.classList.add("column");
+            column.style.width = `${MAX_GRID_SIZE / size}px`;
+            column.style.height = `${MAX_GRID_SIZE / size}px`;
+            column.addEventListener("mouseover", (event) => changeBackgroundColor(event.target));
+            row.appendChild(column);
+        }
+        gridContainer.appendChild(row);
+    }
 
-// variables
-let sizeOfGrid = 0;
-const maxSizeGrid = 750;
-let r = 0;
-let g = 0;
-let b = 0;
+    return gridContainer;
+}
 
-// functions
+// Function to handle grid size input with proper validation
+function handleGridSizePrompt() {
+    let gridSize = parseInt(prompt("Enter a size (64 max): "));
+    while (isNaN(gridSize) || gridSize > MAX_ALLOWED_GRID_SIZE) {
+        alert("Invalid input. Please enter a number between 1 and 64.");
+        gridSize = parseInt(prompt("Enter a size (64 max): "));
+    }
+    return gridSize;
+}
+
+// Function to handle background color changes
 function changeBackgroundColor(element) {
-    let passOver = element.dataset.passOver | 0;
-    if (passOver === 0) {
-        let r = Math.floor(Math.random() * 255);
-        let g = Math.floor(Math.random() * 255);
-        let b = Math.floor(Math.random() * 255);
-        element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    const passOverCount = element.dataset.passOver | 0;
 
+    if (passOverCount === 0) {
+        const [r, g, b] = [Math.random() * 256 | 0, Math.random() * 256 | 0, Math.random() * 256 | 0];
+        element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
     } else {
-        let colorNow = element.style.backgroundColor;
-        let rgb = colorNow.match(/\d+/g).map(Number);
-        let newColor = `rgb(${Math.max(0, rgb[0] - (255 / 10))}, ${Math.max(0, rgb[1] - (255 / 10))}, ${Math.max(0, rgb[2] - (255 / 10))})`;
+        const rgb = element.style.backgroundColor.match(/\d+/g).map(Number);
+        const newColor = `rgb(${Math.max(0, rgb[0] - (255 / 10))
+            }, ${Math.max(0, rgb[1] - (255 / 10))}, ${Math.max(0, rgb[2] - (255 / 10))})`;
         element.style.backgroundColor = newColor;
     }
-    element.dataset.passOver = passOver + 1;
-    if (passOver === 10) {
+
+    element.dataset.passOver = passOverCount + 1;
+    if (passOverCount === 10) {
         element.style.backgroundColor = "black";
     }
 }
 
-function btnSizeGrid() {
-    gridContainer.innerHTML = "";
-    sizeOfGrid = parseInt(prompt("Enter a size(64 max): "));
-    while (sizeOfGrid > 64) {
-        sizeOfGrid = parseInt(prompt("Enter a size(64 max): "));
-    }
-    for (let i = 0; i < sizeOfGrid; i++) {
-        // create the row (div)
-        let row = document.createElement("div");
-        row.classList.add("row");
-        row.style.width = maxSizeGrid / sizeOfGrid;
-        row.style.height = maxSizeGrid / sizeOfGrid;
+// Initialize button and grid
+const buttonSizeGrid = document.createElement("button");
+buttonSizeGrid.classList.add("btn-grid-size");
+buttonSizeGrid.textContent = "Size";
+buttonSizeGrid.addEventListener("click", () => {
+    const gridSize = handleGridSizePrompt();
+    BODY.replaceChild(createGrid(gridSize), BODY.querySelector(".grid-container"));
+});
 
-        // loop fot he columns (div)
-        for (let j = 0; j < sizeOfGrid; j++) {
-            let column = document.createElement("div");
-            column.classList.add("column");
-            column.style.width = (maxSizeGrid / sizeOfGrid) + "px";
-            column.style.height = (maxSizeGrid / sizeOfGrid) + "px";
-            column.addEventListener("mouseover", () => changeBackgroundColor(column))
-
-            // adding column to row
-            row.appendChild(column);
-        }
-
-        // Addin row to container
-        gridContainer.appendChild(row);
-    }
-}
-
-// create and insert the divs, loop for the rows
-
-
-// insert divs in the body
-body.appendChild(buttonSizeGrid);
-body.appendChild(gridContainer);
-
-
+BODY.appendChild(buttonSizeGrid);
+BODY.appendChild(createGrid(0)); // Initially create an empty grid
