@@ -9,7 +9,7 @@ buttonSizeGrid.className = "btn-grid-size";
 
 // size button
 buttonSizeGrid.innerHTML = "Size"
-buttonSizeGrid.addEventListener("click", btnSizeGride)
+buttonSizeGrid.addEventListener("click", btnSizeGrid)
 
 // variables
 let sizeOfGrid = 0;
@@ -20,13 +20,26 @@ let b = 0;
 
 // functions
 function changeBackgroundColor(element) {
-    r = Math.floor(Math.random() * 255);
-    g = Math.floor(Math.random() * 255);
-    b = Math.floor(Math.random() * 255);
-    element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    let passOver = element.dataset.passOver | 0;
+    if (passOver === 0) {
+        let r = Math.floor(Math.random() * 255);
+        let g = Math.floor(Math.random() * 255);
+        let b = Math.floor(Math.random() * 255);
+        element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+
+    } else {
+        let colorNow = element.style.backgroundColor;
+        let rgb = colorNow.match(/\d+/g).map(Number);
+        let newColor = `rgb(${Math.max(0, rgb[0] - (255 / 10))}, ${Math.max(0, rgb[1] - (255 / 10))}, ${Math.max(0, rgb[2] - (255 / 10))})`;
+        element.style.backgroundColor = newColor;
+    }
+    element.dataset.passOver = passOver + 1;
+    if (passOver === 10) {
+        element.style.backgroundColor = "black";
+    }
 }
 
-function btnSizeGride() {
+function btnSizeGrid() {
     gridContainer.innerHTML = "";
     sizeOfGrid = parseInt(prompt("Enter a size(64 max): "));
     while (sizeOfGrid > 64) {
