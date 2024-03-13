@@ -14,10 +14,16 @@ buttonSizeGrid.addEventListener("click", btnSizeGride)
 // variables
 let sizeOfGrid = 0;
 const maxSizeGrid = 750;
+let r = 0;
+let g = 0;
+let b = 0;
 
 // functions
 function changeBackgroundColor(element) {
-    element.style.backgroundColor = "black";
+    r = Math.floor(Math.random() * 255);
+    g = Math.floor(Math.random() * 255);
+    b = Math.floor(Math.random() * 255);
+    element.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
 }
 
 function btnSizeGride() {
